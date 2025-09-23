@@ -1,43 +1,43 @@
-```markdown
-# Website Vulnerability Predictor (Alpha prototype)
+Website Vulnerability Predictor (Alpha prototype)
 
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
-[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange)](https://www.tensorflow.org/)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+Python
+TensorFlow
+License
 
 A machine learning-based tool for predicting vulnerabilities in websites. It trains a deep neural network on CVE (Common Vulnerabilities and Exposures) data to classify weaknesses (based on CWE names) and analyzes live URLs for potential issues like XSS, SSL problems, and script vulnerabilities. The tool generates detailed reports in CSV and PDF formats.
+Features
 
-## Features
-- **Model Training**: Uses PySpark for data merging and TensorFlow for training a bidirectional LSTM model with expanded dense layers on CVE datasets.
-- **Live URL Analysis**: Extracts website features (headers, content, technologies), performs specific checks (XSS, SSL, script issues), and predicts vulnerabilities using the trained model.
-- **Risk Assessment**: Classifies risk levels (LOW, MEDIUM, HIGH, CRITICAL) based on prediction confidence.
-- **Recommendations**: Generates security recommendations tailored to detected issues.
-- **Reports**: Saves results as CSV (detailed data) and PDF (formatted summary) with progress tracking via tqdm.
-- **Modular Design**: Code is split into separate files for easy maintenance (e.g., checkers, savers).
+    Model Training: Uses PySpark for data merging and TensorFlow for training a bidirectional LSTM model with expanded dense layers on CVE datasets.
+    Live URL Analysis: Extracts website features (headers, content, technologies), performs specific checks (XSS, SSL, script issues), and predicts vulnerabilities using the trained model.
+    Risk Assessment: Classifies risk levels (LOW, MEDIUM, HIGH, CRITICAL) based on prediction confidence.
+    Recommendations: Generates security recommendations tailored to detected issues.
+    Reports: Saves results as CSV (detailed data) and PDF (formatted summary) with progress tracking via tqdm.
+    Modular Design: Code is split into separate files for easy maintenance (e.g., checkers, savers).
 
-## Prerequisites
-- Python 3.8+
-- NVIDIA GPU (optional, for faster training; tested with RTX 3050)
-- Datasets: Place CVE CSV files (cve.csv, products.csv, vendor_product.csv, vendors.csv) in a `dataset/` folder.
+Prerequisites
 
-## Installation
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/website-vulnerability-predictor.git
-   cd website-vulnerability-predictor
-   ```
+    Python 3.8+
+    NVIDIA GPU (optional, for faster training; tested with RTX 3050)
+    Datasets: Place CVE CSV files (cve.csv, products.csv, vendor_product.csv, vendors.csv) in a dataset/ folder.
 
-2. Install dependencies:
-   ```
-   pip install tensorflow requests beautifulsoup4 tqdm reportlab pandas numpy lxml pyspark
-   ```
-   - For GPU support: Ensure CUDA/cuDNN are installed and follow TensorFlow GPU setup.
-   - If PDF generation fails: `pip install reportlab`.
+Installation
 
-3. (Optional) Prepare datasets: Download CVE data from sources like NVD and place in `dataset/`.
+    Clone the repository:
 
-## Directory Structure
-```
+    git clone https://github.com/yourusername/website-vulnerability-predictor.git
+    cd website-vulnerability-predictor
+
+    Install dependencies:
+
+    pip install tensorflow requests beautifulsoup4 tqdm reportlab pandas numpy lxml pyspark
+
+        For GPU support: Ensure CUDA/cuDNN are installed and follow TensorFlow GPU setup.
+        If PDF generation fails: pip install reportlab.
+
+    (Optional) Prepare datasets: Download CVE data from sources like NVD and place in dataset/.
+
+Directory Structure
+
 website-vulnerability-predictor/
 ├── main.py                      # Entry point for URL analysis
 ├── directory_setup.py           # Creates output directories
@@ -60,37 +60,38 @@ website-vulnerability-predictor/
 ├── tokenizer.json               # Tokenizer config
 ├── label_to_int.txt             # Label mappings
 └── README.md                    # This file
-```
 
-## Usage
+Usage
+1. Train the Model
 
-### 1. Train the Model
-- Run the training script:
-  ```
-  python train_model.py
-  ```
-- This loads/merges CVE data, preprocesses it, trains the model, and saves `deep_model.keras`, `tokenizer.json`, and `label_to_int.txt`.
-- Adjust sampling fraction or limits in the script if needed for dataset size.
+    Run the training script:
 
-### 2. Analyze a URL
-- Run the predictor:
-  ```
-  python main.py https://example.com
-  ```
-- **Options**:
-  - `--model <path>`: Path to trained model (default: deep_model.keras).
-  - `--tokenizer <path>`: Path to tokenizer (default: tokenizer.json).
-  - `--labels <path>`: Path to label mappings (default: label_to_int.txt).
-  - `--output-dir <folder>`: Report save location (default: ml_analyze_out).
-  - `--verbose`: Show detailed logs and features.
-  - `--no-pdf`: Skip PDF generation.
-  - `--no-csv`: Skip CSV generation.
-- Example: `python main.py https://google.com --verbose --output-dir test_reports`.
+    python train_model.py
 
-- **Output**: Console report with predictions, recommendations, and saved files in the output directory (e.g., CSV for data, PDF for summary).
+    This loads/merges CVE data, preprocesses it, trains the model, and saves deep_model.keras, tokenizer.json, and label_to_int.txt.
+    Adjust sampling fraction or limits in the script if needed for dataset size.
 
-### Example Output
-```
+2. Analyze a URL
+
+    Run the predictor:
+
+    python main.py https://example.com
+
+    Options:
+        --model <path>: Path to trained model (default: deep_model.keras).
+        --tokenizer <path>: Path to tokenizer (default: tokenizer.json).
+        --labels <path>: Path to label mappings (default: label_to_int.txt).
+        --output-dir <folder>: Report save location (default: ml_analyze_out).
+        --verbose: Show detailed logs and features.
+        --no-pdf: Skip PDF generation.
+        --no-csv: Skip CSV generation.
+
+    Example: python main.py https://google.com --verbose --output-dir test_reports.
+
+    Output: Console report with predictions, recommendations, and saved files in the output directory (e.g., CSV for data, PDF for summary).
+
+Example Output
+
 🔍 Starting vulnerability analysis for: https://google.com
 ...
 WEBSITE VULNERABILITY ANALYSIS REPORT
@@ -102,27 +103,29 @@ Predicted Vulnerability: No Significant Vulnerability
 Confidence: 95.00%
 ...
 ✅ Reports generated successfully
-```
 
-## Testing
-- Test with a secure site: `python main.py https://google.com` (expect LOW risk).
-- Test with a potentially vulnerable site: Use demo sites like http://testphp.vulnweb.com (note: ethical testing only).
-- Verify reports: Open generated CSV/PDF files for details.
+Testing
 
-## Troubleshooting
-- **Model Loading Errors**: Ensure trained files exist and paths match.
-- **Hanging Checks**: SSL checker includes timeouts; adjust in `ssl_checker.py` if needed.
-- **PDF Overflow**: Fixed with word wrapping; update `pdf_saver.py` if issues persist.
-- **Memory Issues**: Reduce batch size in training or use smaller sampling.
-- Logs: Run with `--verbose` for details.
+    Test with a secure site: python main.py https://google.com (expect LOW risk).
+    Test with a potentially vulnerable site: Use demo sites like http://testphp.vulnweb.com (note: ethical testing only).
+    Verify reports: Open generated CSV/PDF files for details.
 
-## Contributing
+Troubleshooting
+
+    Model Loading Errors: Ensure trained files exist and paths match.
+    Hanging Checks: SSL checker includes timeouts; adjust in ssl_checker.py if needed.
+    PDF Overflow: Fixed with word wrapping; update pdf_saver.py if issues persist.
+    Memory Issues: Reduce batch size in training or use smaller sampling.
+    Logs: Run with --verbose for details.
+
+Contributing
+
 Pull requests welcome! For major changes, open an issue first.
+License
 
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
+Acknowledgments
 
-## Acknowledgments
-- Built with TensorFlow, PySpark, and ReportLab.
-- Inspired by CVE data from NVD.
-```
+    Built with TensorFlow, PySpark, and ReportLab.
+    Inspired by CVE data from NVD.
+
